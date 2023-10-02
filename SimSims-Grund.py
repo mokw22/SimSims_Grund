@@ -87,3 +87,27 @@ class Lada:
 
     def __str__(self):
         return str(self._food)
+
+
+class Lager:
+    def __init__(self):
+        self._products = []
+
+    def recieve_product(self, product):
+        self._products.append(product)
+
+    def send_product(self):
+        if len(self._products > 0):
+            return self._products.pop()
+        else:
+            raise IndexError("Empty products stack!")
+
+    def last_product(self):
+        if len(self._products > 0):
+            return self._products[-1]
+
+    def __len__(self):
+        return len(self._products)
+
+    def __str__(self):
+        return str(self._products)
