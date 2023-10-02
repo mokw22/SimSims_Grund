@@ -35,3 +35,29 @@ class Stack:
 
     def top(self):
         return self._data[-1]
+
+
+class Barack:
+    def __init__(self):
+        self._workers = deque()
+
+    def recieve_worker(self, worker):
+        self._workers.append(worker)
+
+    def send_worker(self):
+        if len(self._workers > 0):
+            return self._workers.popleft()
+        else:
+            raise IndexError("Connot dequeue from an empty queue!")
+
+    def front_worker(self):
+        if len(self._workers > 0):
+            return self._workers[0]
+        else:
+            raise IndexError("Empty queue!")
+
+    def __len__(self):
+        return len(self._workers)
+
+    def __str__(self):
+        return str(self._workers)
