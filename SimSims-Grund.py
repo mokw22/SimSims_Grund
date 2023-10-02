@@ -1,4 +1,5 @@
 from collections import deque
+import random
 
 
 class Queue:
@@ -111,3 +112,13 @@ class Lager:
 
     def __str__(self):
         return str(self._products)
+
+
+class mat:
+    def __init__(self):
+        self._food_quality = random.randint(0, 100)
+
+    def get_food_quality(self):
+        return self._food_quality
+
+
