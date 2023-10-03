@@ -2,42 +2,6 @@ from collections import deque
 import random
 
 
-class Queue:
-    def __init__(self):
-        self._data = deque()
-
-    def enqueue(self, item):
-        self._data.append(item)
-
-    def dequeue(self):
-        assert (len(self.data) > 0)
-        return self._data.popleft()
-
-    def front(self):
-        assert (len(self.data) > 0)
-        return self.data[0]
-
-    def __len__(self):
-        return len(self.data)
-
-    def __str__(self):
-        return str(self.data)
-
-
-class Stack:
-    def __init__(self):
-        self._data = []
-
-    def push(self, item):
-        self._data.append(item)
-
-    def pop(self):
-        return self._data.pop()
-
-    def top(self):
-        return self._data[-1]
-
-
 class Barack:
     def __init__(self):
         self._workers = deque()
@@ -116,9 +80,39 @@ class Lager:
 
 class mat:
     def __init__(self):
-        self._food_quality = random.randint(0, 100)
+        self._food_quality = random.randint(30, 60)
 
     def get_food_quality(self):
         return self._food_quality
 
+
+class Worker:
+    def __init__(self):
+        self._worker_health = 100
+        self._worker_is_alive = True
+
+    def get_life_health(self):
+        return self._worker_health
+
+    def worker_is_alive(self):
+        return self._worker_is_alive
+
+    def increase_health(self, mat):
+        if self.worker_is_alive():
+            self._worker_health = min(100, self._worker_health + mat)
+
+    def shrink_health(self, work_in_factory):
+        if self.worker_is_alive():
+            loosing_health = work_in_factory * 7
+            self._worker_health = max(0, self._worker_health - loosing_health)
+            if self._worker_health == 0:
+                self._worker_is_alive = False
+
+    def random_accident(self):
+        accident_probablity = 0.20
+        if self.worker_is_alive():
+            if random.random() <= accident_probablity:
+                self._worker_health = max(0, self._worker_health - random.randint(20,40))
+                if self._worker_health == 0:
+                    self._worker_is_alive = False
 
