@@ -80,7 +80,7 @@ class Lager:
 
 class Mat:
     def __init__(self):
-        self._Mat_quality = random.randint(30, 60)
+        self._Mat_quality = random.randint(-10, 30)
 
     def get_mat_quality(self):
         return self._Mat_quality
@@ -108,11 +108,17 @@ class Arbetare:
             if self._worker_health == 0:
                 self._worker_is_alive = False
 
+    def decrease_health(self, food_in_matsal):
+        if self.worker_is_alive():
+            self._worker_health = max(0, self._worker_health - food_in_matsal)
+            if self._worker_health == 0:
+                self._worker_is_alive = False
+
     def random_accident_in_åker(self):
         accident_probablity = 0.20
         if self.worker_is_alive():
             if random.random() <= accident_probablity:
-                self._worker_health = max(0, self._worker_health - random.randint(20,40))
+                self._worker_health = max(0, self._worker_health - random.randint(10,30))
                 if self._worker_health == 0:
                     self._worker_is_alive = False
 
@@ -195,3 +201,41 @@ class Åker:
                     food_quality = produced_food.get_mat_quality()
                     self._to_lada.recieve_food(food_quality)
                     self._to_barack.recieve_worker(worker)
+
+
+class Matsal:
+    def __init__(self, from_barack, from_lada, to_barack):
+        self._from_barack = from_barack
+        self._from_lada = from_lada
+        self._to_barack = to_barack
+
+    def set_from_barack(self, from_barack):
+        self._from_barack = from_barack
+
+    def set_from_lada(self, from_lada):
+        self._from_lada = from_lada
+
+    def set_to_barack(self, to_barack):
+        self._to_barack = to_barack
+
+    def check_worker(self, from_barack):
+        return from_barack.__len__() > 0
+
+    def check_food(self, from_lada):
+        return from_lada.__len__() > 0
+
+    def check_adress(self, from_barack, from_lada, to_barack):
+        return from_barack is not None and from_lada is not None and to_barack is not None
+
+    def start_eating(self):
+        if self.check_worker() and self.check_food() and self.check_adress():
+            worker = self._from_barack.send_worker()
+            food_in_matsal = self._from_lada.send_food()
+            food_quality = food_in_matsal.get_mat_quality()
+            if food_quality < 0:
+                worker.decrease_health(food_in_matsal)
+                self._to_barack.recieve_worker(worker)
+            elif food_quality > 0:
+                worker.increase_health(food_in_matsal)
+                self._to_barack.recieve_worker(worker)
+            self._to_barack.recieve_worker(worker)
