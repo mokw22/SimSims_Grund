@@ -82,7 +82,7 @@ class Mat:
     def __init__(self):
         self._Mat_quality = random.randint(30, 60)
 
-    def get_Mat_quality(self):
+    def get_mat_quality(self):
         return self._Mat_quality
 
 
@@ -144,7 +144,7 @@ class Fabriker:
         self._to_lager = to_lager
 
     def check_workers(self, from_barack):
-        return self.from_barack.__len__() > 0
+        return from_barack.__len__() > 0
 
     def check_adress(self, from_barack, to_lager, to_barack):
         return from_barack is not None and to_lager is not None and to_barack is not None
@@ -156,7 +156,42 @@ class Fabriker:
                 work_in_factory = random.randint(1, 5)
                 worker.shrink_health(work_in_factory)
                 if worker.random_accident_in_fabrik():
-                    print('Worker', worker, 'died due an accident!')
+                    print('Worker', worker, 'died due an accident in factory!')
                 else:
-                    self._to_lager.recieve_product(Produkter())
-                    self._to_barack.recieve_worker(Arbetare())
+                    created_product = Produkter()
+                    self._to_lager.recieve_product(created_product)
+                    self._to_barack.recieve_worker(worker)
+
+
+class Åker:
+    def __init__(self, from_barack, to_lada, to_barack):
+        self._from_barack = from_barack
+        self._to_lada = to_lada
+        self._to_barack = to_barack
+
+    def set_from_barack(self, from_barack):
+        self._from_barack = from_barack
+
+    def set_to_lada(self, to_lada):
+        self._to_lada = to_lada
+
+    def set_to_barack(self, to_barack):
+        self._to_barack = to_barack
+
+    def check_worker(self, from_barack):
+        return from_barack.__len__() > 0
+
+    def check_adress(self, from_barack, to_lada, to_barack):
+        return from_barack is not None and to_lada is not None and to_barack is not None
+
+    def produce_food(self):
+        if self.check_worker() and self.check_adress():
+            worker = self._from_barack.send_worker()
+            if worker:
+                if worker.random_accident_in_åker():
+                    print('worker', worker, 'had an accident in field')
+                else:
+                    produced_food = Mat()
+                    food_quality = produced_food.get_mat_quality()
+                    self._to_lada.recieve_food(food_quality)
+                    self._to_barack.recieve_worker(worker)
