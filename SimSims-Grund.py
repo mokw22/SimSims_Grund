@@ -78,15 +78,15 @@ class Lager:
         return str(self._products)
 
 
-class mat:
+class Mat:
     def __init__(self):
-        self._food_quality = random.randint(30, 60)
+        self._Mat_quality = random.randint(30, 60)
 
-    def get_food_quality(self):
-        return self._food_quality
+    def get_Mat_quality(self):
+        return self._Mat_quality
 
 
-class Worker:
+class Arbetare:
     def __init__(self):
         self._worker_health = 100
         self._worker_is_alive = True
@@ -97,9 +97,9 @@ class Worker:
     def worker_is_alive(self):
         return self._worker_is_alive
 
-    def increase_health(self, mat):
+    def increase_health(self, Mat):
         if self.worker_is_alive():
-            self._worker_health = min(100, self._worker_health + mat)
+            self._worker_health = min(100, self._worker_health + Mat)
 
     def shrink_health(self, work_in_factory):
         if self.worker_is_alive():
@@ -108,7 +108,7 @@ class Worker:
             if self._worker_health == 0:
                 self._worker_is_alive = False
 
-    def random_accident(self):
+    def random_accident_in_åker(self):
         accident_probablity = 0.20
         if self.worker_is_alive():
             if random.random() <= accident_probablity:
@@ -116,3 +116,47 @@ class Worker:
                 if self._worker_health == 0:
                     self._worker_is_alive = False
 
+    def random_accident_in_fabrik(self):
+        accident_death_probability = 0.2
+        if self._worker_is_alive():
+            if random.random() <= accident_death_probability:
+                self._worker_health = 0
+                self._worker_is_alive = False
+
+
+class Produkter:
+    pass
+
+
+class Fabriker:
+    def __init__(self, from_barack, to_lager, to_barack):
+        self._from_barack = from_barack
+        self._to_lager = to_lager
+        self._to_barack = to_barack
+
+    def set_from_barack(self, from_barack):
+        self._from_barack = from_barack
+
+    def set_to_barack(self, to_barack):
+        self._to_barack = to_barack
+
+    def set_to_lager(self, to_lager):
+        self._to_lager = to_lager
+
+    def check_workers(self, from_barack):
+        return self.from_barack.__len__() > 0
+
+    def check_adress(self, from_barack, to_lager, to_barack):
+        return from_barack is not None and to_lager is not None and to_barack is not None
+
+    def create_product(self):
+        if self.check_workers() and self.check_adress():
+            worker = self._from_barack.send_worker()
+            if worker:
+                work_in_factory = random.randint(1, 5)
+                worker.shrink_health(work_in_factory)
+                if worker.random_accident_in_fabrik():
+                    print('Worker', worker, 'died due an accident!')
+                else:
+                    self._to_lager.recieve_product(Produkter())
+                    self._to_barack.recieve_worker(Arbetare())
