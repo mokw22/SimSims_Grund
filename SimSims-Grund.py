@@ -114,6 +114,16 @@ class Arbetare:
             if self._worker_health == 0:
                 self._worker_is_alive = False
 
+    def rest_at_home_alone(self):
+        if self._worker_is_alive():
+            increase_health = random.randint(1, 10)
+            self._worker_health += increase_health
+            return increase_health
+
+    def increase_health_by_sleeping(self, rest_at_home_alone):
+        if self.worker_is_alive():
+            self._worker_health = max(0, self._worker_health + rest_at_home_alone)
+
     def random_accident_in_åker(self):
         accident_probablity = 0.20
         if self.worker_is_alive():
@@ -158,15 +168,14 @@ class Fabriker:
     def create_product(self):
         if self.check_workers() and self.check_adress():
             worker = self._from_barack.send_worker()
-            if worker:
-                work_in_factory = random.randint(1, 5)
-                worker.shrink_health(work_in_factory)
-                if worker.random_accident_in_fabrik():
-                    print('Worker', worker, 'died due an accident in factory!')
-                else:
-                    created_product = Produkter()
-                    self._to_lager.recieve_product(created_product)
-                    self._to_barack.recieve_worker(worker)
+            work_in_factory = random.randint(1, 5)
+            worker.shrink_health(work_in_factory)
+            if worker.random_accident_in_fabrik():
+                print('Worker', worker, 'died due an accident in factory!')
+            else:
+                created_product = Produkter()
+                self._to_lager.recieve_product(created_product)
+                self._to_barack.recieve_worker(worker)
 
 
 class Åker:
@@ -193,14 +202,13 @@ class Åker:
     def produce_food(self):
         if self.check_worker() and self.check_adress():
             worker = self._from_barack.send_worker()
-            if worker:
-                if worker.random_accident_in_åker():
-                    print('worker', worker, 'had an accident in field')
-                else:
-                    produced_food = Mat()
-                    food_quality = produced_food.get_mat_quality()
-                    self._to_lada.recieve_food(food_quality)
-                    self._to_barack.recieve_worker(worker)
+            if worker.random_accident_in_åker():
+                print('worker', worker, 'had an accident in field')
+            else:
+                produced_food = Mat()
+                food_quality = produced_food.get_mat_quality()
+                self._to_lada.recieve_food(food_quality)
+                self._to_barack.recieve_worker(worker)
 
 
 class Matsal:
@@ -239,3 +247,47 @@ class Matsal:
                 worker.increase_health(food_in_matsal)
                 self._to_barack.recieve_worker(worker)
             self._to_barack.recieve_worker(worker)
+
+
+class Hem:
+    def __init__(self, from_barack, from_lager, to_barack):
+        self._from_barack = from_barack
+        self._from_lager = from_lager
+        self._to_barack = to_barack
+        self._type_of_house = random.choice([True, False])  # True: vila, False: föröka sig
+
+    def set_from_barack(self, from_barack):
+        self._from_barack = from_barack
+
+    def set_from_lager(self, from_lager):
+        self._from_lager = from_lager
+
+    def set_to_barack(self, to_barack):
+        self._to_barack = to_barack
+
+    def check_product(self, from_lager):
+        return from_lager.__len__() > 0
+
+    def check_worker(self, from_barack):
+        if self._type_of_house and from_barack.__len__() >= 1:
+            return True
+        if not self._type_of_house and from_barack.__len__() >= 2:
+            return False
+
+    def check_adress(self, from_barack, from_lager, to_barack):
+        return from_barack is not None and from_lager is not None and to_barack is not None
+
+    def set_home(self):
+        if self.check_worker() and self.check_product() and self.check_adress():
+            worker = self._from_barack.send_worker()
+            self._from_lager.send_product()
+            worker.increase_health_by_sleeping(self.rest_at_home_alone())
+            self._to_barack.recieve_worker(worker)
+        if not self.check_worker() and self.check_product() and self.check_adress():
+            worker1 = self._from_barack.send_worker()
+            worker2 = self._from_barack.send_worker()
+            self._from_lager.send_product()
+            new_worker = Arbetare()
+            self._to_barack.recieve_worker(worker1)
+            self._to_barack.recieve_worker(worker2)
+            self._to_barack.recieve_worker(new_worker)
